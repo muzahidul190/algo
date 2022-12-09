@@ -3,9 +3,12 @@
 using namespace std;
 double calcDist(double,double,double,double);
 struct point{
-    double x,y;
+    double x,y,dist;
     int cat;
 };
+bool sortpoints(point a, point b){
+    return a.dist<b.dist;
+}
 int main(){
 
     int n,c;
@@ -14,7 +17,6 @@ int main(){
     cout<<"How many points?\t";
     cin>>n;
     point points[n+1];
-    double dist[n+1];
     cout<<"\nHow many categories?\t";
     cin>>c;
     getchar();
@@ -36,7 +38,7 @@ int main(){
         cin>>x>>y;
 
         for(int i=0;i<n;i++)
-            dist[i] = calcDist(x,y,points[i].x,points[i].y);
+            points[i].dist = calcDist(x,y,points[i].x,points[i].y);
 
         cout<<"\n\nThe test points are:\n";
         cout<<"Pn"<<setw(8)<<"X"<<setw(8)<<"Y\t"<<setw(8)<<"\tCategory\n";
@@ -46,20 +48,46 @@ int main(){
 
         cout<<"\n\nThe distances of points from sample point are:\nPn\tDistance\n";
         for(int i=0;i<n;i++){
-            cout<<i+1<<":\t"<<dist[i]<<endl;
+            cout<<i+1<<":\t"<<points[i].dist<<endl;
         }
 
+        sort(points, points + n, sortpoints);
 
-        double sm = dist[0];
-        int resCat = points[0].cat;
-        for(int i=1;i<n;i++){
-            if(dist[i] < sm){
-                sm = dist[i];
-                resCat = points[i].cat;
-            }
+        //Edit Starts for value k
+
+        int k;
+        do{
+            cout<<"Enter value of k (1-"<<n<<"):\n";
+            cin>>k;
+        }while(!(k>0 && k<=n));
+
+        double finx=0,finy=0;
+
+        for(int i=0;i<k;i++){
+            finx += points[i].x;
+            finy += points[i].y;
+        }
+        finx /= k;
+        finy /= k;
+
+        for(int i=0;i<n;i++)
+            points[i].dist = calcDist(finx,finy,points[i].x,points[i].y);
+
+
+
+        cout<<"\n\nThe distances of points from average points of k are:\nPn\tDistance\n";
+        for(int i=0;i<n;i++){
+            cout<<i+1<<":\t"<<points[i].dist<<endl;
         }
 
-        cout<<"\nThe Category of the sample is:\t"<<cats[resCat-1]<<endl;
+        sort(points, points + n, sortpoints);
+
+
+        //Edit ends for value k
+
+
+
+        cout<<"\nThe Category of the sample is:\t"<<cats[points[0].cat-1]<<endl;
     }while(x == y && x == 0);
 
 }
